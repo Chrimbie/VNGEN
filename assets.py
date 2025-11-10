@@ -90,8 +90,19 @@ class MusicAssetTab(AssetTabBase):
         files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Import Music", "", self.patterns)
         if files: self.add_items(files)
 
+class ScriptAssetTab(AssetTabBase):
+    def __init__(self, parent=None):
+        super().__init__("Scripts", "Python (*.py)", "SCRIPT", parent)
+        self.btnImport.clicked.connect(self._import)
+
+    def _import(self):
+        files, _ = QtWidgets.QFileDialog.getOpenFileNames(self, "Import Scripts", "", self.patterns)
+        if files:
+            self.add_items(files)
+
+
 class AssetsDock(QtWidgets.QDockWidget):
-    addBG  = QtCore.Signal(str); addSPR = QtCore.Signal(str); addSFX = QtCore.Signal(str); addMUS = QtCore.Signal(str)
+    addBG  = QtCore.Signal(str); addSPR = QtCore.Signal(str); addSFX = QtCore.Signal(str); addMUS = QtCore.Signal(str); addScript = QtCore.Signal(str)
     def __init__(self, parent=None):
         super().__init__("Assets", parent)
         self.setObjectName("AssetsDock")
@@ -99,12 +110,15 @@ class AssetsDock(QtWidgets.QDockWidget):
         tabs = QtWidgets.QTabWidget(w)
         lay = QtWidgets.QVBoxLayout(w); lay.setContentsMargins(6,6,6,6); lay.addWidget(tabs)
 
-        self.bgTab  = ImageAssetTab("BG");     tabs.addTab(self.bgTab,  "Backgrounds")
-        self.spTab  = ImageAssetTab("SPRITE"); tabs.addTab(self.spTab,  "Sprites")
-        self.sfxTab = SfxAssetTab();           tabs.addTab(self.sfxTab, "SFX")
-        self.musTab = MusicAssetTab();         tabs.addTab(self.musTab, "Music")
+        self.bgTab     = ImageAssetTab("BG");     tabs.addTab(self.bgTab,     "Backgrounds")
+        self.spTab     = ImageAssetTab("SPRITE"); tabs.addTab(self.spTab,     "Sprites")
+        self.sfxTab    = SfxAssetTab();           tabs.addTab(self.sfxTab,    "SFX")
+        self.musTab    = MusicAssetTab();         tabs.addTab(self.musTab,    "Music")
+        self.scriptTab = ScriptAssetTab();        tabs.addTab(self.scriptTab, "Scripts")
 
         self.bgTab.addRequested.connect(self.addBG.emit)
         self.spTab.addRequested.connect(self.addSPR.emit)
         self.sfxTab.addRequested.connect(self.addSFX.emit)
         self.musTab.addRequested.connect(self.addMUS.emit)
+        self.scriptTab.addRequested.connect(self.addScript.emit)
+
